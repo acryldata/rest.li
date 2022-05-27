@@ -17,10 +17,13 @@
 buildscript {
   repositories {
     jcenter()
+    gradlePluginPortal()
+    mavenCentral()
   }
   dependencies {
     classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.21.0'
     classpath 'org.jacoco:org.jacoco.core:0.8.7'
+    classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
   }
 }
 
@@ -43,8 +46,8 @@ apply from: environmentScript
 apply from: "${buildScriptDirPath}/configBuildScript.gradle"
 
 project.ext.externalDependency = [
-  'antlr': 'org.antlr:antlr4:4.5',
-  'antlrRuntime': 'org.antlr:antlr4-runtime:4.5',
+  'antlr': 'org.antlr:antlr4:4.6',
+  'antlrRuntime': 'org.antlr:antlr4-runtime:4.6',
   'avro': 'org.apache.avro:avro:1.9.2',
   'avro_1_6': 'org.apache.avro:avro:1.6.3',
    // avro compatibility layer
@@ -168,6 +171,14 @@ idea {
   }
 }
 
+apply plugin: 'io.codearte.nexus-staging'
+
+nexusStaging {
+  serverUrl = "https://s01.oss.sonatype.org/service/local/" //required only for projects registered in Sonatype after 2021-02-24
+  username = findProperty("sonatypeUsername")
+  password = findProperty("sonatypePassword")
+}
+
 subprojects {
   apply plugin: 'java'
   apply plugin: 'eclipse'
@@ -242,6 +253,7 @@ subprojects {
     repositories {
       mavenLocal()
       mavenCentral()
+      gradlePluginPortal()
       maven {
         url "https://linkedin.jfrog.io/artifactory/open-source"
       }
@@ -453,4 +465,3 @@ project.gradle.buildFinished { BuildResult result ->
     logger.warn msgBuilder.toString()
   }
 }
-

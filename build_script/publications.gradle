@@ -19,6 +19,7 @@
  */
 apply plugin: 'maven-publish'
 apply plugin: 'java-library'
+apply plugin: 'signing'
 
 def pomConfig = {
   resolveStrategy = Closure.DELEGATE_FIRST // needed for the description to be included for some reason
@@ -37,10 +38,14 @@ def pomConfig = {
     // TODO: add developers
   }
   scm {
-    url 'git@github.com:linkedin/rest.li.git'
-    connection 'scm:git:git@github.com:linkedin/rest.li.git'
-    developerConnection 'scm:git:git@github.com:linkedin/rest.li.git'
+
   }
+}
+
+nexusStaging {
+  serverUrl = "https://s01.oss.sonatype.org/service/local/" //required only for projects registered in Sonatype after 2021-02-24
+  username = findProperty("sonatypeUsername")
+  password = findProperty("sonatypePassword")
 }
 
 // Closure that injects extra metadata during POM generation
@@ -79,6 +84,17 @@ publishing {
       pom.withXml manipulatePomXml
     }
   }
+}
+
+/**signing {
+  def signingKey = findProperty("signingKey")
+  def signingPassword = findProperty("signingPassword")
+  //useInMemoryPgpKeys(signingKey, signingPassword)
+  sign publishing.publications.release
+}*/
+signing {
+  useGpgCmd()
+  sign publishing.publications.release
 }
 
 // Utility task to assert that all to-be-published artifacts exist (allows us to safely decouple build and publish tasks)
