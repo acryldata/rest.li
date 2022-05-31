@@ -35,10 +35,16 @@ def pomConfig = {
     }
   }
   developers {
-    // TODO: add developers
-  }
+     developer {
+       id = 'datahub'
+       name = 'Datahub'
+       email = 'datahub@acryl.io'
+     }
+   }
   scm {
-
+    connection = 'scm:git:git://github.com/acryldata/rest.li.git'
+    developerConnection = 'scm:git:ssh://github.com:acryldata/rest.li.git'
+    url = 'https://github.com/acryldata/rest.li.git'
   }
 }
 
