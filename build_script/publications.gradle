@@ -21,6 +21,13 @@ apply plugin: 'maven-publish'
 apply plugin: 'java-library'
 apply plugin: 'signing'
 
+nexusStaging {
+  serverUrl = "https://s01.oss.sonatype.org/service/local/" //required only for projects registered in Sonatype after 2021-02-24
+  username = findProperty("sonatypeUsername")
+  password = findProperty("sonatypePassword")
+}
+
+/*
 def pomConfig = {
   resolveStrategy = Closure.DELEGATE_FIRST // needed for the description to be included for some reason
   name project.name // sub-project name
@@ -48,12 +55,6 @@ def pomConfig = {
   }
 }
 
-nexusStaging {
-  serverUrl = "https://s01.oss.sonatype.org/service/local/" //required only for projects registered in Sonatype after 2021-02-24
-  username = findProperty("sonatypeUsername")
-  password = findProperty("sonatypePassword")
-}
-
 // Closure that injects extra metadata during POM generation
 def manipulatePomXml = {
   def root = asNode()
@@ -66,11 +67,12 @@ def manipulatePomXml = {
     children.last() + pomConfig
   }
 }
-
+*/
 // Define all publications for this sub-project.
 // For some publication "XXX", this creates a task "generatePomFileForXXXPublication", which generates the Maven (.pom) publication.
 publishing {
   publications {
+
     // Define the "release" publication
     release(MavenPublication) {
       from components.java
@@ -84,22 +86,47 @@ publishing {
         }
       }
 
-      groupId project.group
-      artifactId project.name // sub-project name
-      version project.version
-      pom.withXml manipulatePomXml
+      pom {
+        groupId = project.group
+        artifactId = project.name // sub-project name
+        version = project.version
+        packaging = 'jar'
+        resolveStrategy = Closure.DELEGATE_FIRST // needed for the description to be included for some reason
+        name = project.name // sub-project name
+        description = 'Rest.li is a framework for building robust, scalable service architectures using dynamic discovery and simple asychronous type-checked REST + JSON APIs.'
+        url = 'https://rest.li'
+        //url = 'https://datahubproject.io'
+        licenses {
+          license {
+            name = 'The Apache Software License, Version 2.0'
+            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            distribution = 'repo'
+          }
+        }
+        developers {
+          developer {
+            id = 'datahub'
+            name = 'Datahub'
+            email = 'datahub@acryl.io'
+          }
+        }
+        scm {
+          connection = 'scm:git:git://github.com/acryldata/rest.li.git'
+          developerConnection = 'scm:git:ssh://github.com:acryldata/rest.li.git'
+          url = 'https://github.com/acryldata/rest.li.git'
+        }
+      }
+
+
+     // pom.withXml manipulatePomXml
     }
   }
 }
 
-/**signing {
+signing {
   def signingKey = findProperty("signingKey")
   def signingPassword = findProperty("signingPassword")
-  //useInMemoryPgpKeys(signingKey, signingPassword)
-  sign publishing.publications.release
-}*/
-signing {
-  useGpgCmd()
+  useInMemoryPgpKeys(signingKey, signingPassword)
   sign publishing.publications.release
 }
 

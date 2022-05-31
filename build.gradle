@@ -95,7 +95,7 @@ project.ext.externalDependency = [
   'objenesis': 'org.objenesis:objenesis:1.2',
   'parseq': 'com.linkedin.parseq:parseq:5.1.2',
   'parseq_tracevis': 'com.linkedin.parseq:parseq-tracevis:5.1.2',
-  'parseq_restClient': 'com.linkedin.parseq:parseq-restli-client:5.1.2',
+  'parseq_restClient': 'io.acryl:parseq-restli-client:5.1.2',
   'parseq_testApi': 'com.linkedin.parseq:parseq-test-api:5.1.2',
   'servletApi': 'javax.servlet:javax.servlet-api:3.1.0',
   'slf4jApi': 'org.slf4j:slf4j-api:1.7.30',
